@@ -14,22 +14,26 @@ export default function AutoFillPanel({ api }: { api: PlannerApi }) {
   return (
     <div className="rounded-xl border border-line bg-white p-3.5">
       <div className="mb-2.5 text-[0.85rem] font-semibold">מילוי אוטומטי</div>
-      <div className="mb-2.5 flex flex-col gap-1.5">
-        {OPTIONS.map((o) => (
-          <label
-            key={o.value}
-            className="flex cursor-pointer items-center gap-2 text-[0.82rem]"
-          >
-            <input
-              type="radio"
-              name="fill-size"
-              checked={fillSize === o.value}
-              onChange={() => setFillSize(o.value)}
-              className="accent-brand"
-            />
-            {o.label}
-          </label>
-        ))}
+      <div className="mb-3 flex flex-wrap gap-1.5">
+        {OPTIONS.map((o) => {
+          const active = fillSize === o.value;
+          return (
+            <button
+              key={o.value}
+              type="button"
+              aria-pressed={active}
+              onClick={() => setFillSize(o.value)}
+              className={[
+                "rounded-full border px-3 py-1.5 text-[0.8rem] font-medium transition",
+                active
+                  ? "border-brand bg-brand text-white"
+                  : "border-line bg-white text-neutral-600 hover:border-brand/60",
+              ].join(" ")}
+            >
+              {o.label}
+            </button>
+          );
+        })}
       </div>
       <div className="flex gap-1.5">
         <button

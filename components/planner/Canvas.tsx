@@ -90,9 +90,11 @@ export default function Canvas({ api }: { api: PlannerApi }) {
     null,
   );
   const onViewportPointerDown = (e: React.PointerEvent) => {
-    if (e.target !== viewportRef.current && e.target !== planeRef.current) return;
+    // Boxes (and their controls) call stopPropagation on pointer-down, so if the
+    // event reaches the viewport it means the user grabbed empty space / the
+    // shelf itself → pan the canvas. Works for mouse and touch.
     panRef.current = { sx: e.clientX, sy: e.clientY, px: pan.x, py: pan.y };
-    (e.target as Element).setPointerCapture?.(e.pointerId);
+    viewportRef.current?.setPointerCapture?.(e.pointerId);
   };
   const onViewportPointerMove = (e: React.PointerEvent) => {
     const p = panRef.current;
