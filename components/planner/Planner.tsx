@@ -1,0 +1,114 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { usePlanner } from "@/lib/usePlanner";
+import { buildCartLines, checkout } from "@/lib/cart";
+import type { CatalogItem } from "@/lib/types";
+import ModeSelector from "./ModeSelector";
+import CatalogSidebar from "./CatalogSidebar";
+import AutoFillPanel from "./AutoFillPanel";
+import Controls from "./Controls";
+import Canvas from "./Canvas";
+import OrderSummary from "./OrderSummary";
+import MobileCatalog from "./MobileCatalog";
+import Toast from "./Toast";
+
+const STEPS = [
+  'בחרו מדף או מגירה והזינו את המידות בס"מ.',
+  "בחרו קופסאות מהקטלוג וסדרו אותן.",
+  "עברו בין תצוגות כדי לוודא שהכל יושב כמו שצריך.",
+  "הוסיפו לסל הקניות וסיימתם!",
+];
+
+export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
+  const api = usePlanner(catalog);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        api.undo();
+      } else if (
+        (e.ctrlKey || e.metaKey) &&
+        (e.key === "y" || (e.key === "z" && e.shiftKey))
+      ) {
+        e.preventDefault();
+        api.redo();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [api]);
+
+  const onCheckout = async () => {
+    const lines = buildCartLines(api.placed, catalog);
+    if (lines.length === 0) {
+      api.showToast("לא ניתן להוסיף לסל");
+      return;
+    }
+    setBusy(true);
+    try {
+      await checkout(lines);
+    } catch {
+      setBusy(false);
+      api.showToast("שגיאה בהוספה לסל");
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-[1400px] px-5 pb-10 pt-5">
+      <Toast message={api.toast} />
+
+      {busy && (
+        <div className="fixed inset-0 z-[3000] flex flex-col items-center justify-center gap-5 bg-black/70">
+          <div className="h-12 w-12 rounded-full border-4 border-white/30 border-t-brand animate-oxo-spin" />
+          <div className="text-xl font-semibold text-white">מוסיף לסל הקניות...</div>
+        </div>
+      )}
+
+      <header className="mb-6 flex justify-center pt-5">
+        <a href="https://www.uniqook.co.il" target="_blank" rel="noreferrer">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/uniqook-logo.svg"
+            alt="UNIQOOK"
+            width={260}
+            className="h-auto w-[260px]"
+          />
+        </a>
+      </header>
+
+      <ModeSelector mode={api.mode} onChange={api.setMode} />
+
+      <ol className="my-5 flex flex-wrap justify-center gap-x-7 gap-y-1.5 rounded-xl border border-line bg-white px-5 py-3.5 text-[0.86rem] text-neutral-600">
+        {STEPS.map((s, i) => (
+          <li key={i} className="list-inside list-decimal">
+            {s}
+          </li>
+        ))}
+      </ol>
+
+      <div className="mb-4 flex flex-col gap-4 lg:flex-row">
+        <aside className="hidden w-60 flex-shrink-0 flex-col gap-3 lg:flex">
+          <CatalogSidebar catalog={catalog} onAdd={api.addBox} />
+          <AutoFillPanel api={api} />
+        </aside>
+
+        <section className="flex min-w-0 flex-1 flex-col gap-3">
+          <Controls api={api} />
+          <Canvas api={api} />
+        </section>
+      </div>
+
+      {/* auto-fill on mobile (sidebar hidden) */}
+      <div className="mb-4 lg:hidden">
+        <AutoFillPanel api={api} />
+      </div>
+
+      <OrderSummary api={api} onCheckout={onCheckout} busy={busy} />
+
+      <MobileCatalog catalog={catalog} onAdd={api.addBox} />
+    </div>
+  );
+}
