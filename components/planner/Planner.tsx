@@ -6,7 +6,7 @@ import { buildCartLines, checkout } from "@/lib/cart";
 import type { CatalogItem } from "@/lib/types";
 import CatalogSidebar from "./CatalogSidebar";
 import AutoFillPanel from "./AutoFillPanel";
-import Controls from "./Controls";
+import SpacePanel from "./SpacePanel";
 import Canvas from "./Canvas";
 import OrderSummary from "./OrderSummary";
 import MobileCatalog from "./MobileCatalog";
@@ -72,13 +72,10 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
         </a>
       </header>
 
-      <div className="mb-4 mt-5">
-        <Controls api={api} />
-      </div>
-
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch">
-        {/* right: catalog + auto-fill */}
+      <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-stretch">
+        {/* right: space settings + catalog + auto-fill */}
         <aside className="hidden w-64 flex-shrink-0 flex-col gap-3 lg:flex">
+          <SpacePanel api={api} />
           <CatalogSidebar catalog={catalog} onAdd={api.addBox} />
           <AutoFillPanel api={api} />
         </aside>
@@ -94,8 +91,9 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
         </aside>
       </div>
 
-      {/* mobile: auto-fill + order summary stacked (sidebars hidden) */}
+      {/* mobile: space + auto-fill + order summary stacked (sidebars hidden) */}
       <div className="mt-4 flex flex-col gap-4 lg:hidden">
+        <SpacePanel api={api} />
         <AutoFillPanel api={api} />
         <OrderSummary api={api} onCheckout={onCheckout} busy={busy} />
       </div>

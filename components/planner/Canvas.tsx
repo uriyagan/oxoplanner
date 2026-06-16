@@ -26,7 +26,7 @@ const ZOOM_MIN = 0.2;
 const ZOOM_MAX = 3;
 
 export default function Canvas({ api }: { api: PlannerApi }) {
-  const { container, placed, view, mode, getType, moveBox } = api;
+  const { container, placed, view, setView, mode, getType, moveBox } = api;
   const viewportRef = useRef<HTMLDivElement>(null);
   const planeRef = useRef<HTMLDivElement>(null);
 
@@ -361,6 +361,19 @@ export default function Canvas({ api }: { api: PlannerApi }) {
         {/* floating zoom / undo controls — must stay above the boxes */}
         <div className="pointer-events-none absolute left-3 top-3 z-30">
           <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-1.5 rounded-xl border border-line bg-white/95 px-2.5 py-1.5 shadow-sm backdrop-blur">
+            {mode === "shelf" && (
+              <>
+                <div className="flex overflow-hidden rounded-md border border-line bg-bg">
+                  <ViewBtn active={view === "front"} onClick={() => setView("front")}>
+                    קדמית
+                  </ViewBtn>
+                  <ViewBtn active={view === "top"} onClick={() => setView("top")}>
+                    עילית
+                  </ViewBtn>
+                </div>
+                <span className="mx-1 h-5 w-px bg-line" />
+              </>
+            )}
             <CtrlBtn onClick={api.undo} disabled={!api.canUndo} title="Ctrl+Z">
               ↩ ביטול
             </CtrlBtn>
@@ -368,7 +381,9 @@ export default function Canvas({ api }: { api: PlannerApi }) {
               ↪ שחזור
             </CtrlBtn>
             <span className="mx-1 h-5 w-px bg-line" />
-            <CtrlBtn onClick={fit}>⟲ איפוס תצוגה</CtrlBtn>
+            <CtrlBtn onClick={fit} title="איפוס תצוגה">
+              ⟲ איפוס
+            </CtrlBtn>
             <span className="mx-1 h-5 w-px bg-line" />
             <CtrlBtn onClick={() => changeZoom(-0.1)} square>
               −
@@ -445,6 +460,29 @@ function Ruler({ axis, label }: { axis: "h" | "v"; label: string }) {
         {label}
       </span>
     </div>
+  );
+}
+
+function ViewBtn({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={[
+        "px-3 py-1 text-[0.8rem] transition",
+        active ? "bg-white font-semibold text-ink" : "text-muted hover:text-ink",
+      ].join(" ")}
+    >
+      {children}
+    </button>
   );
 }
 
