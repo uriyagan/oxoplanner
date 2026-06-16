@@ -36,7 +36,7 @@ export default function CatalogSidebar({
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border border-line bg-white">
       <div className="flex items-center justify-between border-b border-line px-3.5 py-3">
-        <span className="text-[0.95rem] font-semibold">קטלוג קופסאות</span>
+        <span className="text-[0.95rem] font-bold">קטלוג קופסאות</span>
         <span className="rounded-full bg-bg px-2 py-0.5 text-[0.72rem] text-muted">
           {count}
         </span>

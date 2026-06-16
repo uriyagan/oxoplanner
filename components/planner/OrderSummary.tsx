@@ -36,7 +36,7 @@ export default function OrderSummary({
 
   return (
     <div className="rounded-xl border border-line bg-white p-6">
-      <h2 className="mb-4 text-[0.95rem] font-semibold">סיכום הזמנה</h2>
+      <h2 className="mb-4 text-[0.95rem] font-bold">סיכום הזמנה</h2>
 
       <div className="min-h-[60px]">
         {empty ? (

@@ -13,7 +13,7 @@ export default function AutoFillPanel({ api }: { api: PlannerApi }) {
   const { fillSize, setFillSize, autoFill, shuffleFill, didFill } = api;
   return (
     <div className="rounded-xl border border-line bg-white p-3.5">
-      <div className="mb-2.5 text-[0.95rem] font-semibold">מילוי אוטומטי</div>
+      <div className="mb-2.5 text-[0.95rem] font-bold">מילוי אוטומטי</div>
       <div className="mb-3 flex flex-wrap gap-1.5">
         {OPTIONS.map((o) => {
           const active = fillSize === o.value;

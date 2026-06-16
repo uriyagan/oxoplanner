@@ -12,7 +12,7 @@ export default function SpacePanel({ api }: { api: PlannerApi }) {
 
   return (
     <div className="flex flex-col gap-2.5 rounded-xl border border-line bg-white p-3.5">
-      <div className="text-[0.95rem] font-semibold">הגדרת השטח</div>
+      <div className="text-[0.95rem] font-bold">הגדרת השטח</div>
 
       <Row label="סוג">
         <select
