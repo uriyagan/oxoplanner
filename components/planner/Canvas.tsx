@@ -12,10 +12,10 @@ import type { BoxType, PlacedBox, Vec3 } from "@/lib/types";
 import type { PlannerApi } from "@/lib/usePlanner";
 import {
   BinIcon,
+  FitIcon,
   MinusIcon,
   PlusIcon,
   RedoIcon,
-  ResetIcon,
   UndoIcon,
 } from "@/components/icons";
 
@@ -249,7 +249,7 @@ export default function Canvas({ api }: { api: PlannerApi }) {
   );
 
   return (
-    <div className="relative h-full min-h-[460px] overflow-hidden rounded-xl bg-canvas">
+    <div className="relative h-[52vh] min-h-[340px] overflow-hidden rounded-xl bg-canvas lg:h-full lg:min-h-[460px]">
       <div
         ref={viewportRef}
         className="absolute inset-0 isolate cursor-grab touch-none active:cursor-grabbing"
@@ -388,7 +388,7 @@ export default function Canvas({ api }: { api: PlannerApi }) {
                 <RedoIcon className="h-3.5 w-3.5" />
               </CtrlBtn>
               <CtrlBtn onClick={fit} title="איפוס תצוגה" square>
-                <ResetIcon className="h-3.5 w-3.5" />
+                <FitIcon className="h-3.5 w-3.5" />
               </CtrlBtn>
             </div>
             <div className="flex items-center gap-1">
@@ -415,7 +415,7 @@ function UtilRing({ pct }: { pct: number }) {
   const circ = 2 * Math.PI * r;
   const offset = circ * (1 - Math.max(0, Math.min(100, pct)) / 100);
   return (
-    <div className="pointer-events-none absolute right-3 top-3 z-20">
+    <div className="pointer-events-none absolute right-3 top-3 z-20 hidden lg:block">
       <div className="relative" style={{ width: size, height: size }}>
         <svg width={size} height={size} className="-rotate-90">
           <circle

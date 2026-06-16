@@ -6,7 +6,7 @@ import type { Mode } from "@/lib/types";
 import type { PlannerApi } from "@/lib/usePlanner";
 import { MinusIcon, PlusIcon } from "@/components/icons";
 
-const FIELD_W = "w-28"; // every control shares this exact width
+const FIELD_W = "w-40 lg:w-36"; // every control shares this exact width
 
 export default function SpacePanel({ api }: { api: PlannerApi }) {
   const { dims, changeDim, setDims, mode, setMode } = api;

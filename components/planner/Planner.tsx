@@ -11,6 +11,7 @@ import Canvas from "./Canvas";
 import OrderSummary from "./OrderSummary";
 import MobileCatalog from "./MobileCatalog";
 import HelpButton from "./HelpButton";
+import UtilBar from "./UtilBar";
 import Toast from "./Toast";
 
 export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
@@ -86,7 +87,7 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
         </aside>
 
         {/* center: canvas (matches the right menu height) */}
-        <section className="flex min-h-[55vh] min-w-0 flex-1 flex-col lg:min-h-[460px]">
+        <section className="flex min-w-0 flex-1 flex-col">
           <Canvas api={api} />
         </section>
 
@@ -96,8 +97,9 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
         </aside>
       </div>
 
-      {/* mobile: auto-fill + order summary below the canvas */}
-      <div className="mt-4 flex flex-col gap-4 lg:hidden">
+      {/* mobile: utilization bar right below the canvas, then auto-fill + summary */}
+      <div className="mt-3 flex flex-col gap-4 lg:hidden">
+        <UtilBar pct={api.utilPct} />
         <AutoFillPanel api={api} />
         <OrderSummary api={api} onCheckout={onCheckout} busy={busy} />
       </div>
