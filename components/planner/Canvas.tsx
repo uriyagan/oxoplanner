@@ -10,6 +10,14 @@ import {
 } from "@/lib/packing";
 import type { BoxType, PlacedBox, Vec3 } from "@/lib/types";
 import type { PlannerApi } from "@/lib/usePlanner";
+import {
+  BinIcon,
+  MinusIcon,
+  PlusIcon,
+  RedoIcon,
+  ResetIcon,
+  UndoIcon,
+} from "@/components/icons";
 
 interface DragState {
   id: number;
@@ -348,9 +356,9 @@ export default function Canvas({ api }: { api: PlannerApi }) {
                       e.stopPropagation();
                       api.removeBox(b.id);
                     }}
-                    className="absolute -left-2 -top-2 hidden h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-brand text-[10px] leading-none text-white shadow group-hover:flex"
+                    className="absolute -left-2 -top-2 hidden h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-brand text-white shadow group-hover:flex"
                   >
-                    ✕
+                    <BinIcon className="h-3 w-3" />
                   </button>
                 </div>
               );
@@ -374,24 +382,24 @@ export default function Canvas({ api }: { api: PlannerApi }) {
             )}
             <div className="flex items-center gap-1">
               <CtrlBtn onClick={api.undo} disabled={!api.canUndo} title="ביטול (Ctrl+Z)" square>
-                ↩
+                <UndoIcon className="h-3.5 w-3.5" />
               </CtrlBtn>
               <CtrlBtn onClick={api.redo} disabled={!api.canRedo} title="שחזור (Ctrl+Y)" square>
-                ↪
+                <RedoIcon className="h-3.5 w-3.5" />
               </CtrlBtn>
               <CtrlBtn onClick={fit} title="איפוס תצוגה" square>
-                ⟲
+                <ResetIcon className="h-3.5 w-3.5" />
               </CtrlBtn>
             </div>
             <div className="flex items-center gap-1">
-              <CtrlBtn onClick={() => changeZoom(-0.1)} square>
-                −
+              <CtrlBtn onClick={() => changeZoom(-0.1)} title="הקטנה" square>
+                <MinusIcon className="h-3 w-3" />
               </CtrlBtn>
               <span className="min-w-[40px] text-center text-[0.82rem] text-muted">
                 {Math.round(zoom * 100)}%
               </span>
-              <CtrlBtn onClick={() => changeZoom(0.1)} square>
-                +
+              <CtrlBtn onClick={() => changeZoom(0.1)} title="הגדלה" square>
+                <PlusIcon className="h-3 w-3" />
               </CtrlBtn>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { DIM_LIMITS } from "@/lib/config";
 import type { Mode } from "@/lib/types";
 import type { PlannerApi } from "@/lib/usePlanner";
+import { MinusIcon, PlusIcon } from "@/components/icons";
 
 const FIELD_W = "w-28"; // every control shares this exact width
 
@@ -99,10 +100,11 @@ function DimRow({
       >
         <button
           type="button"
+          aria-label="הגדל"
           onClick={() => onStep(1)}
-          className="h-full w-[30px] flex-shrink-0 text-base hover:bg-line"
+          className="flex h-full w-[30px] flex-shrink-0 items-center justify-center text-neutral-600 hover:bg-line"
         >
-          +
+          <PlusIcon className="h-2.5 w-2.5" />
         </button>
         <input
           type="number"
@@ -128,10 +130,11 @@ function DimRow({
         />
         <button
           type="button"
+          aria-label="הקטן"
           onClick={() => onStep(-1)}
-          className="h-full w-[30px] flex-shrink-0 text-base hover:bg-line"
+          className="flex h-full w-[30px] flex-shrink-0 items-center justify-center text-neutral-600 hover:bg-line"
         >
-          −
+          <MinusIcon className="h-2.5 w-2.5" />
         </button>
       </div>
     </Row>

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { effectivePrice, formatPrice } from "@/lib/format";
 import type { CatalogItem } from "@/lib/types";
 import type { PlannerApi } from "@/lib/usePlanner";
+import { MinusIcon, PlusIcon } from "@/components/icons";
 
 export default function OrderSummary({
   api,
@@ -56,11 +57,15 @@ export default function OrderSummary({
                 </div>
               </div>
               <div className="mx-3 flex items-center gap-1.5">
-                <QtyBtn onClick={() => removeOneOfType(item.id)}>−</QtyBtn>
+                <QtyBtn onClick={() => removeOneOfType(item.id)} label="הסר אחד">
+                  <MinusIcon className="h-2.5 w-2.5" />
+                </QtyBtn>
                 <span className="min-w-5 text-center text-[0.9rem] font-semibold">
                   {count}
                 </span>
-                <QtyBtn onClick={() => addBox(item.id)}>+</QtyBtn>
+                <QtyBtn onClick={() => addBox(item.id)} label="הוסף אחד">
+                  <PlusIcon className="h-2.5 w-2.5" />
+                </QtyBtn>
               </div>
               <div className="whitespace-nowrap text-[0.95rem] font-semibold">
                 {formatPrice(unit * count, item.price?.currency)}
@@ -99,15 +104,18 @@ export default function OrderSummary({
 function QtyBtn({
   children,
   onClick,
+  label,
 }: {
   children: React.ReactNode;
   onClick: () => void;
+  label?: string;
 }) {
   return (
     <button
       type="button"
+      aria-label={label}
       onClick={onClick}
-      className="flex h-6 w-6 items-center justify-center rounded-md border border-line bg-white text-sm transition hover:bg-bg"
+      className="flex h-6 w-6 items-center justify-center rounded-md border border-line bg-white text-neutral-600 transition hover:bg-bg"
     >
       {children}
     </button>
