@@ -50,7 +50,7 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
   };
 
   return (
-    <div className="w-full px-4 pb-10 pt-5 md:px-[60px]">
+    <div className="w-full px-4 pb-28 pt-5 md:px-[60px] lg:pb-10">
       <Toast message={api.toast} />
 
       {busy && (
@@ -72,7 +72,12 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
         </a>
       </header>
 
-      <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-stretch">
+      {/* mobile: size settings go above the canvas */}
+      <div className="mt-5 lg:hidden">
+        <SpacePanel api={api} />
+      </div>
+
+      <div className="mt-4 flex flex-col gap-4 lg:mt-5 lg:flex-row lg:items-stretch">
         {/* right: space settings + catalog + auto-fill */}
         <aside className="hidden w-64 flex-shrink-0 flex-col gap-3 lg:flex">
           <SpacePanel api={api} />
@@ -81,7 +86,7 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
         </aside>
 
         {/* center: canvas (matches the right menu height) */}
-        <section className="flex min-h-[460px] min-w-0 flex-1 flex-col">
+        <section className="flex min-h-[55vh] min-w-0 flex-1 flex-col lg:min-h-[460px]">
           <Canvas api={api} />
         </section>
 
@@ -91,9 +96,8 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
         </aside>
       </div>
 
-      {/* mobile: space + auto-fill + order summary stacked (sidebars hidden) */}
+      {/* mobile: auto-fill + order summary below the canvas */}
       <div className="mt-4 flex flex-col gap-4 lg:hidden">
-        <SpacePanel api={api} />
         <AutoFillPanel api={api} />
         <OrderSummary api={api} onCheckout={onCheckout} busy={busy} />
       </div>

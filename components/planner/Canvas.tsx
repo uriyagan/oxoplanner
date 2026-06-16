@@ -361,40 +361,39 @@ export default function Canvas({ api }: { api: PlannerApi }) {
 
         {/* floating zoom / undo controls — must stay above the boxes */}
         <div className="pointer-events-none absolute left-3 top-3 z-30">
-          <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-1.5 rounded-xl border border-line bg-white/95 px-2.5 py-1.5 shadow-sm backdrop-blur">
+          <div className="pointer-events-auto flex flex-wrap items-center justify-start gap-x-2 gap-y-1.5 rounded-xl border border-line bg-white/95 px-2 py-1.5 shadow-sm backdrop-blur">
             {mode === "shelf" && (
-              <>
-                <div className="flex overflow-hidden rounded-md border border-line bg-bg">
-                  <ViewBtn active={view === "front"} onClick={() => setView("front")}>
-                    קדמית
-                  </ViewBtn>
-                  <ViewBtn active={view === "top"} onClick={() => setView("top")}>
-                    עילית
-                  </ViewBtn>
-                </div>
-                <span className="mx-1 h-5 w-px bg-line" />
-              </>
+              <div className="flex overflow-hidden rounded-md border border-line bg-bg">
+                <ViewBtn active={view === "front"} onClick={() => setView("front")}>
+                  קדמית
+                </ViewBtn>
+                <ViewBtn active={view === "top"} onClick={() => setView("top")}>
+                  עילית
+                </ViewBtn>
+              </div>
             )}
-            <CtrlBtn onClick={api.undo} disabled={!api.canUndo} title="Ctrl+Z">
-              ↩ ביטול
-            </CtrlBtn>
-            <CtrlBtn onClick={api.redo} disabled={!api.canRedo} title="Ctrl+Y">
-              ↪ שחזור
-            </CtrlBtn>
-            <span className="mx-1 h-5 w-px bg-line" />
-            <CtrlBtn onClick={fit} title="איפוס תצוגה">
-              ⟲ איפוס
-            </CtrlBtn>
-            <span className="mx-1 h-5 w-px bg-line" />
-            <CtrlBtn onClick={() => changeZoom(-0.1)} square>
-              −
-            </CtrlBtn>
-            <span className="min-w-[42px] text-center text-[0.82rem] text-muted">
-              {Math.round(zoom * 100)}%
-            </span>
-            <CtrlBtn onClick={() => changeZoom(0.1)} square>
-              +
-            </CtrlBtn>
+            <div className="flex items-center gap-1">
+              <CtrlBtn onClick={api.undo} disabled={!api.canUndo} title="ביטול (Ctrl+Z)" square>
+                ↩
+              </CtrlBtn>
+              <CtrlBtn onClick={api.redo} disabled={!api.canRedo} title="שחזור (Ctrl+Y)" square>
+                ↪
+              </CtrlBtn>
+              <CtrlBtn onClick={fit} title="איפוס תצוגה" square>
+                ⟲
+              </CtrlBtn>
+            </div>
+            <div className="flex items-center gap-1">
+              <CtrlBtn onClick={() => changeZoom(-0.1)} square>
+                −
+              </CtrlBtn>
+              <span className="min-w-[40px] text-center text-[0.82rem] text-muted">
+                {Math.round(zoom * 100)}%
+              </span>
+              <CtrlBtn onClick={() => changeZoom(0.1)} square>
+                +
+              </CtrlBtn>
+            </div>
           </div>
         </div>
     </div>
