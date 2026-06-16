@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { CATEGORY_ORDER } from "@/lib/catalog-seed";
 import { volumeMm3 } from "@/lib/packing";
 import { formatPrice } from "@/lib/format";
@@ -13,13 +13,9 @@ export default function CatalogSidebar({
   catalog: CatalogItem[];
   onAdd: (id: string) => void;
 }) {
-  const [query, setQuery] = useState("");
-
   const groups = useMemo(() => {
-    const q = query.trim();
     const map = new Map<string, CatalogItem[]>();
     for (const item of catalog) {
-      if (q && !item.name.includes(q)) continue;
       const arr = map.get(item.category) ?? [];
       arr.push(item);
       map.set(item.category, arr);
@@ -33,7 +29,7 @@ export default function CatalogSidebar({
       }
     }
     return ordered;
-  }, [catalog, query]);
+  }, [catalog]);
 
   const count = groups.reduce((n, [, arr]) => n + arr.length, 0);
 
@@ -45,15 +41,7 @@ export default function CatalogSidebar({
           {count}
         </span>
       </div>
-      <div className="border-b border-line px-3 py-2">
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="חיפוש..."
-          className="w-full rounded-md border border-line px-2.5 py-1.5 text-[0.85rem] outline-none focus:border-brand"
-        />
-      </div>
-      <div className="scroll-thin max-h-[520px] overflow-y-auto p-1.5">
+      <div className="scroll-thin max-h-[560px] overflow-y-auto p-1.5">
         {groups.map(([cat, items]) => (
           <div key={cat}>
             <div className="px-2 pb-1 pt-2 text-[0.72rem] font-semibold tracking-wide text-muted">
