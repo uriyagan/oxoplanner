@@ -362,9 +362,10 @@ export default function Canvas({ api }: { api: PlannerApi }) {
         </div>
         <UtilRing pct={api.utilPct} />
 
-        {/* floating zoom / undo controls — must stay above the boxes */}
-        <div className="pointer-events-none absolute left-1/2 top-3 z-30 -translate-x-1/2 lg:left-3 lg:translate-x-0">
-          <div className="pointer-events-auto flex flex-wrap items-center justify-start gap-x-2 gap-y-1.5 rounded-xl border border-line bg-white/95 px-2 py-1.5 shadow-sm backdrop-blur">
+        {/* floating zoom / undo controls — must stay above the boxes.
+            Mobile: one full-width row spread edge to edge. Desktop: compact, top-left. */}
+        <div className="pointer-events-none absolute inset-x-3 top-3 z-30 lg:inset-x-auto lg:left-3">
+          <div className="pointer-events-auto flex w-full items-center justify-between gap-2 rounded-xl border border-line bg-white/95 px-2.5 py-1.5 shadow-sm backdrop-blur lg:w-auto lg:justify-start">
             {mode === "shelf" && (
               <div className="flex overflow-hidden rounded-md border border-line bg-bg">
                 <ViewBtn active={view === "front"} onClick={() => setView("front")}>
