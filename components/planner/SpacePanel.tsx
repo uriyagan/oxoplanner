@@ -6,41 +6,43 @@ import type { Mode } from "@/lib/types";
 import type { PlannerApi } from "@/lib/usePlanner";
 import { MinusIcon, PlusIcon } from "@/components/icons";
 
-const FIELD_W = "w-40 lg:w-36"; // every control shares this exact width
+// Shared control size. On mobile fields go 2-per-row (full width of the grid
+// cell); on desktop they stack with a fixed width so they all line up.
+const CONTROL = "h-9 w-full lg:w-36";
 
 export default function SpacePanel({ api }: { api: PlannerApi }) {
   const { dims, changeDim, setDims, mode, setMode } = api;
 
   return (
-    <div className="flex flex-col gap-2.5 rounded-xl border border-line bg-white p-3.5">
-      <div className="text-[0.95rem] font-bold">הגדרת השטח</div>
+    <div className="grid grid-cols-2 gap-x-3 gap-y-3 rounded-xl border border-line bg-white p-3.5 lg:flex lg:flex-col lg:gap-2.5">
+      <div className="col-span-2 text-[0.95rem] font-bold">הגדרת השטח</div>
 
-      <Row label="סוג">
+      <Field label="סוג">
         <select
           value={mode}
           onChange={(e) => setMode(e.target.value as Mode)}
-          className={`h-[30px] ${FIELD_W} cursor-pointer rounded-md border border-line bg-bg px-2 text-[0.85rem] font-semibold outline-none focus:border-brand`}
+          className={`${CONTROL} cursor-pointer rounded-md border border-line bg-bg px-2 text-[0.85rem] font-semibold outline-none focus:border-brand`}
         >
           <option value="shelf">מדף</option>
           <option value="drawer">מגירה</option>
         </select>
-      </Row>
+      </Field>
 
-      <DimRow
+      <DimField
         label='רוחב בס"מ'
         value={dims.width}
         onStep={(d) => changeDim("width", d)}
         onSet={(v) => setDims({ width: v })}
       />
       {mode === "shelf" && (
-        <DimRow
+        <DimField
           label='גובה בס"מ'
           value={dims.height}
           onStep={(d) => changeDim("height", d)}
           onSet={(v) => setDims({ height: v })}
         />
       )}
-      <DimRow
+      <DimField
         label='עומק בס"מ'
         value={dims.depth}
         onStep={(d) => changeDim("depth", d)}
@@ -50,7 +52,7 @@ export default function SpacePanel({ api }: { api: PlannerApi }) {
   );
 }
 
-function Row({
+function Field({
   label,
   children,
 }: {
@@ -58,14 +60,14 @@ function Row({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-2 text-[0.82rem]">
+    <label className="flex flex-col gap-1 text-[0.82rem] lg:flex-row lg:items-center lg:justify-between lg:gap-2">
       <span className="text-muted">{label}</span>
       {children}
-    </div>
+    </label>
   );
 }
 
-function DimRow({
+function DimField({
   label,
   value,
   onStep,
@@ -94,15 +96,13 @@ function DimRow({
   };
 
   return (
-    <Row label={label}>
-      <div
-        className={`flex h-[30px] ${FIELD_W} items-center overflow-hidden rounded-md border border-line bg-bg`}
-      >
+    <Field label={label}>
+      <div className={`${CONTROL} flex items-center overflow-hidden rounded-md border border-line bg-bg`}>
         <button
           type="button"
           aria-label="הגדל"
           onClick={() => onStep(1)}
-          className="flex h-full w-[30px] flex-shrink-0 items-center justify-center text-neutral-600 hover:bg-line"
+          className="flex h-full w-9 flex-shrink-0 items-center justify-center text-neutral-600 hover:bg-line"
         >
           <PlusIcon className="h-2.5 w-2.5" />
         </button>
@@ -132,11 +132,11 @@ function DimRow({
           type="button"
           aria-label="הקטן"
           onClick={() => onStep(-1)}
-          className="flex h-full w-[30px] flex-shrink-0 items-center justify-center text-neutral-600 hover:bg-line"
+          className="flex h-full w-9 flex-shrink-0 items-center justify-center text-neutral-600 hover:bg-line"
         >
           <MinusIcon className="h-2.5 w-2.5" />
         </button>
       </div>
-    </Row>
+    </Field>
   );
 }

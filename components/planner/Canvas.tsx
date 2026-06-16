@@ -208,25 +208,20 @@ export default function Canvas({ api }: { api: PlannerApi }) {
       const b = placed.find((p) => p.id === d.id);
       if (!b) return;
       let final = d.pos;
-      // shelf: if dropped in mid-air, settle onto support
-      if (mode !== "drawer") {
-        if (!hasSupport(final, d.type, placed, getType, d.id)) {
-          const sy = findSupportY(
-            final.x,
-            final.z,
-            d.type,
-            container,
-            placed,
-            getType,
-            d.id,
-          );
-          if (sy !== null) {
-            final = { ...final, y: sy };
-          } else {
-            api.showToast("לא ניתן להניח קופסה גדולה על קטנה ממנה");
-            return;
-          }
-        }
+      // shelf: gently settle onto whatever's directly below, but never reject
+      // the drop — the customer can arrange boxes however they like.
+      if (mode !== "drawer" && !hasSupport(final, d.type, placed, getType, d.id)) {
+        const sy = findSupportY(
+          final.x,
+          final.z,
+          d.type,
+          container,
+          placed,
+          getType,
+          d.id,
+        );
+        if (sy !== null) final = { ...final, y: sy };
+        // if nothing's below, leave it where it was dropped (floating is fine)
       }
       if (final.x !== b.x || final.y !== b.y || final.z !== b.z) {
         moveBox(d.id, final);
@@ -368,7 +363,7 @@ export default function Canvas({ api }: { api: PlannerApi }) {
         <UtilRing pct={api.utilPct} />
 
         {/* floating zoom / undo controls — must stay above the boxes */}
-        <div className="pointer-events-none absolute left-3 top-3 z-30">
+        <div className="pointer-events-none absolute left-1/2 top-3 z-30 -translate-x-1/2 lg:left-3 lg:translate-x-0">
           <div className="pointer-events-auto flex flex-wrap items-center justify-start gap-x-2 gap-y-1.5 rounded-xl border border-line bg-white/95 px-2 py-1.5 shadow-sm backdrop-blur">
             {mode === "shelf" && (
               <div className="flex overflow-hidden rounded-md border border-line bg-bg">
@@ -486,7 +481,7 @@ function ViewBtn({
       onClick={onClick}
       className={[
         "px-3 py-1 text-[0.8rem] transition",
-        active ? "bg-white font-semibold text-ink" : "text-muted hover:text-ink",
+        active ? "bg-brand font-semibold text-white" : "text-muted hover:text-ink",
       ].join(" ")}
     >
       {children}
