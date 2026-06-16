@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { DIM_LIMITS } from "@/lib/config";
 import type { PlannerApi } from "@/lib/usePlanner";
 
@@ -69,6 +70,25 @@ function DimInput({
   onStep: (delta: number) => void;
   onSet: (value: number) => void;
 }) {
+  // Local text state so the user can type freely (clear the field, enter a new
+  // number digit-by-digit). We only clamp to the allowed range on blur / Enter,
+  // never mid-keystroke — clamping live snapped partial input up to the minimum.
+  const [text, setText] = useState(String(value));
+  const focused = useRef(false);
+
+  useEffect(() => {
+    if (!focused.current) setText(String(value));
+  }, [value]);
+
+  const commit = () => {
+    const v = parseInt(text, 10);
+    const clamped = Number.isNaN(v)
+      ? value
+      : Math.max(DIM_LIMITS.min, Math.min(DIM_LIMITS.max, v));
+    onSet(clamped);
+    setText(String(clamped));
+  };
+
   return (
     <div className="flex items-center gap-2">
       <span className="whitespace-nowrap text-[0.8rem] text-muted">{label}</span>
@@ -82,13 +102,24 @@ function DimInput({
         </button>
         <input
           type="number"
-          value={value}
+          value={text}
           min={DIM_LIMITS.min}
           max={DIM_LIMITS.max}
+          onFocus={() => {
+            focused.current = true;
+          }}
           onChange={(e) => {
+            setText(e.target.value);
             const v = parseInt(e.target.value, 10);
-            if (!Number.isNaN(v))
-              onSet(Math.max(DIM_LIMITS.min, Math.min(DIM_LIMITS.max, v)));
+            // live-update the canvas while typing, but don't force the minimum
+            if (!Number.isNaN(v)) onSet(Math.max(1, Math.min(DIM_LIMITS.max, v)));
+          }}
+          onBlur={() => {
+            focused.current = false;
+            commit();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.currentTarget.blur();
           }}
           className="h-[30px] w-10 bg-transparent text-center text-[0.9rem] font-semibold outline-none"
         />
