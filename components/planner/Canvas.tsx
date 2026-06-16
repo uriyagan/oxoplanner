@@ -241,11 +241,10 @@ export default function Canvas({ api }: { api: PlannerApi }) {
   );
 
   return (
-    <div className="flex flex-1 flex-col gap-2">
-      <div className="relative min-h-[420px] flex-1 overflow-hidden rounded-xl bg-canvas">
-        <div
-          ref={viewportRef}
-          className="absolute inset-0 cursor-grab touch-none active:cursor-grabbing"
+    <div className="relative h-full min-h-[460px] overflow-hidden rounded-xl bg-canvas">
+      <div
+        ref={viewportRef}
+        className="absolute inset-0 cursor-grab touch-none active:cursor-grabbing"
           onPointerDown={onViewportPointerDown}
           onPointerMove={onViewportPointerMove}
           onPointerUp={endPan}
@@ -307,13 +306,33 @@ export default function Canvas({ api }: { api: PlannerApi }) {
                     zIndex: isDragged ? 1000 : 100 - Math.floor(pos.z / 10),
                   }}
                 >
-                  <img
-                    src={view === "top" ? t.topImg : t.frontImg}
-                    alt=""
-                    draggable={false}
-                    className="block h-full w-full"
-                    style={{ objectFit: "fill" }}
-                  />
+                  {view === "top" && t.w !== t.d ? (
+                    // Non-square footprint: the lid art is drawn long-side
+                    // horizontal, so rotate it 90° to align with the box depth
+                    // while still stretching to fill the whole footprint.
+                    <img
+                      src={t.topImg}
+                      alt=""
+                      draggable={false}
+                      style={{
+                        position: "absolute",
+                        width: boxH,
+                        height: boxW,
+                        top: (boxH - boxW) / 2,
+                        left: (boxW - boxH) / 2,
+                        objectFit: "fill",
+                        transform: "rotate(90deg)",
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={view === "top" ? t.topImg : t.frontImg}
+                      alt=""
+                      draggable={false}
+                      className="block h-full w-full"
+                      style={{ objectFit: "fill" }}
+                    />
+                  )}
                   <span
                     dir="ltr"
                     className="pointer-events-none absolute bottom-[3px] left-1/2 -translate-x-1/2 text-[9px] font-bold text-black/45 [text-shadow:0_0_3px_rgba(255,255,255,0.85)]"
@@ -337,32 +356,73 @@ export default function Canvas({ api }: { api: PlannerApi }) {
             })}
           </div>
         </div>
-      </div>
+        <UtilRing pct={api.utilPct} />
 
-      {/* view controls */}
-      <div className="flex flex-wrap items-center justify-center gap-2 py-1">
-        <CtrlBtn onClick={api.undo} disabled={!api.canUndo} title="Ctrl+Z">
-          ↩ ביטול
-        </CtrlBtn>
-        <CtrlBtn onClick={api.redo} disabled={!api.canRedo} title="Ctrl+Y">
-          ↪ שחזור
-        </CtrlBtn>
-        <span className="mx-1 h-5 w-px bg-line" />
-        <CtrlBtn onClick={fit}>⟲ איפוס תצוגה</CtrlBtn>
-        <span className="mx-1 h-5 w-px bg-line" />
-        <CtrlBtn onClick={() => changeZoom(-0.1)} square>
-          −
-        </CtrlBtn>
-        <span className="min-w-[42px] text-center text-[0.82rem] text-muted">
-          {Math.round(zoom * 100)}%
-        </span>
-        <CtrlBtn onClick={() => changeZoom(0.1)} square>
-          +
-        </CtrlBtn>
+        {/* floating zoom / undo controls */}
+        <div className="pointer-events-none absolute left-3 top-3 z-20">
+          <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-1.5 rounded-full border border-line bg-white/95 px-2.5 py-1.5 shadow-sm backdrop-blur">
+            <CtrlBtn onClick={api.undo} disabled={!api.canUndo} title="Ctrl+Z">
+              ↩ ביטול
+            </CtrlBtn>
+            <CtrlBtn onClick={api.redo} disabled={!api.canRedo} title="Ctrl+Y">
+              ↪ שחזור
+            </CtrlBtn>
+            <span className="mx-1 h-5 w-px bg-line" />
+            <CtrlBtn onClick={fit}>⟲ איפוס תצוגה</CtrlBtn>
+            <span className="mx-1 h-5 w-px bg-line" />
+            <CtrlBtn onClick={() => changeZoom(-0.1)} square>
+              −
+            </CtrlBtn>
+            <span className="min-w-[42px] text-center text-[0.82rem] text-muted">
+              {Math.round(zoom * 100)}%
+            </span>
+            <CtrlBtn onClick={() => changeZoom(0.1)} square>
+              +
+            </CtrlBtn>
+          </div>
+        </div>
+    </div>
+  );
+}
+
+function UtilRing({ pct }: { pct: number }) {
+  const size = 76;
+  const stroke = 6;
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ * (1 - Math.max(0, Math.min(100, pct)) / 100);
+  return (
+    <div className="pointer-events-none absolute right-3 top-3 z-20">
+      <div className="relative" style={{ width: size, height: size }}>
+        <svg width={size} height={size} className="-rotate-90">
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={r}
+            fill="white"
+            stroke="#e6e6e6"
+            strokeWidth={stroke}
+          />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={r}
+            fill="none"
+            stroke="#df002c"
+            strokeWidth={stroke}
+            strokeLinecap="round"
+            strokeDasharray={circ}
+            strokeDashoffset={offset}
+            style={{ transition: "stroke-dashoffset 0.5s ease" }}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+          <span className="text-[0.95rem] font-bold leading-none">{pct}%</span>
+          <span className="mt-0.5 text-[0.5rem] leading-tight text-muted">
+            ניצול שטח
+          </span>
+        </div>
       </div>
-      <p className="text-center text-[0.72rem] text-neutral-400">
-        גררו קופסאות לסידור מחדש · Ctrl+Z ביטול · Ctrl+Y שחזור
-      </p>
     </div>
   );
 }

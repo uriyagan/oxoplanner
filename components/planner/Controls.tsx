@@ -6,12 +6,12 @@ import type { Mode } from "@/lib/types";
 import type { PlannerApi } from "@/lib/usePlanner";
 
 export default function Controls({ api }: { api: PlannerApi }) {
-  const { dims, changeDim, setDims, view, setView, mode, setMode, utilPct } = api;
+  const { dims, changeDim, setDims, view, setView, mode, setMode } = api;
 
   return (
     <div className="flex flex-wrap items-stretch gap-2.5">
       <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3.5 py-2.5">
-        <span className="whitespace-nowrap text-[0.8rem] text-muted">סוג</span>
+        <span className="whitespace-nowrap text-[0.8rem] text-muted">שטח</span>
         <select
           value={mode}
           onChange={(e) => setMode(e.target.value as Mode)}
@@ -57,17 +57,6 @@ export default function Controls({ api }: { api: PlannerApi }) {
           </div>
         </div>
       )}
-
-      <div className="flex min-w-[180px] flex-1 items-center gap-2.5 rounded-xl border border-line bg-white px-3.5 py-2.5">
-        <span className="text-[0.8rem] font-semibold text-muted">{utilPct}%</span>
-        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-line">
-          <div
-            className="h-full rounded-full bg-brand transition-[width] duration-500"
-            style={{ width: `${utilPct}%` }}
-          />
-        </div>
-        <span className="whitespace-nowrap text-[0.8rem] text-muted">ניצול שטח</span>
-      </div>
     </div>
   );
 }

@@ -86,21 +86,24 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
         ))}
       </ol>
 
-      <div className="flex flex-col gap-4 lg:flex-row">
+      <div className="mb-4">
+        <Controls api={api} />
+      </div>
+
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch">
         {/* right: catalog + auto-fill */}
         <aside className="hidden w-64 flex-shrink-0 flex-col gap-3 lg:flex">
           <CatalogSidebar catalog={catalog} onAdd={api.addBox} />
           <AutoFillPanel api={api} />
         </aside>
 
-        {/* center: canvas */}
-        <section className="flex min-w-0 flex-1 flex-col gap-3">
-          <Controls api={api} />
+        {/* center: canvas (matches the right menu height) */}
+        <section className="flex min-h-[460px] min-w-0 flex-1 flex-col">
           <Canvas api={api} />
         </section>
 
         {/* left: order summary */}
-        <aside className="hidden w-80 flex-shrink-0 lg:block">
+        <aside className="hidden w-80 flex-shrink-0 self-start lg:block">
           <OrderSummary api={api} onCheckout={onCheckout} busy={busy} />
         </aside>
       </div>
