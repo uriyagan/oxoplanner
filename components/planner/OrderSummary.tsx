@@ -75,7 +75,7 @@ export default function OrderSummary({
         <span className="text-2xl font-bold">{formatPrice(lines.total)}</span>
       </div>
 
-      <div className="mt-4 flex flex-col gap-2.5 sm:flex-row">
+      <div className="mt-4 flex flex-col gap-2.5">
         <button
           type="button"
           onClick={onCheckout}

@@ -2,13 +2,26 @@
 
 import { useEffect, useRef, useState } from "react";
 import { DIM_LIMITS } from "@/lib/config";
+import type { Mode } from "@/lib/types";
 import type { PlannerApi } from "@/lib/usePlanner";
 
 export default function Controls({ api }: { api: PlannerApi }) {
-  const { dims, changeDim, setDims, view, setView, mode, utilPct } = api;
+  const { dims, changeDim, setDims, view, setView, mode, setMode, utilPct } = api;
 
   return (
     <div className="flex flex-wrap items-stretch gap-2.5">
+      <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3.5 py-2.5">
+        <span className="whitespace-nowrap text-[0.8rem] text-muted">סוג</span>
+        <select
+          value={mode}
+          onChange={(e) => setMode(e.target.value as Mode)}
+          className="h-[30px] cursor-pointer rounded-md border border-line bg-bg px-2 text-[0.85rem] font-semibold outline-none focus:border-brand"
+        >
+          <option value="shelf">מדף</option>
+          <option value="drawer">מגירה</option>
+        </select>
+      </div>
+
       <div className="flex items-center gap-2.5 rounded-xl border border-line bg-white px-3.5 py-2.5">
         <DimInput
           label="רוחב"

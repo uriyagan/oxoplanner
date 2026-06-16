@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { usePlanner } from "@/lib/usePlanner";
 import { buildCartLines, checkout } from "@/lib/cart";
 import type { CatalogItem } from "@/lib/types";
-import ModeSelector from "./ModeSelector";
 import CatalogSidebar from "./CatalogSidebar";
 import AutoFillPanel from "./AutoFillPanel";
 import Controls from "./Controls";
@@ -57,7 +56,7 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
   };
 
   return (
-    <div className="mx-auto max-w-[1400px] px-5 pb-10 pt-5">
+    <div className="w-full px-4 pb-10 pt-5 md:px-[60px]">
       <Toast message={api.toast} />
 
       {busy && (
@@ -79,8 +78,6 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
         </a>
       </header>
 
-      <ModeSelector mode={api.mode} onChange={api.setMode} />
-
       <ol className="my-5 flex flex-wrap justify-center gap-x-7 gap-y-1.5 rounded-xl border border-line bg-white px-5 py-3.5 text-[0.86rem] text-neutral-600">
         {STEPS.map((s, i) => (
           <li key={i} className="list-inside list-decimal">
@@ -89,24 +86,30 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
         ))}
       </ol>
 
-      <div className="mb-4 flex flex-col gap-4 lg:flex-row">
-        <aside className="hidden w-60 flex-shrink-0 flex-col gap-3 lg:flex">
+      <div className="flex flex-col gap-4 lg:flex-row">
+        {/* right: catalog + auto-fill */}
+        <aside className="hidden w-64 flex-shrink-0 flex-col gap-3 lg:flex">
           <CatalogSidebar catalog={catalog} onAdd={api.addBox} />
           <AutoFillPanel api={api} />
         </aside>
 
+        {/* center: canvas */}
         <section className="flex min-w-0 flex-1 flex-col gap-3">
           <Controls api={api} />
           <Canvas api={api} />
         </section>
+
+        {/* left: order summary */}
+        <aside className="hidden w-80 flex-shrink-0 lg:block">
+          <OrderSummary api={api} onCheckout={onCheckout} busy={busy} />
+        </aside>
       </div>
 
-      {/* auto-fill on mobile (sidebar hidden) */}
-      <div className="mb-4 lg:hidden">
+      {/* mobile: auto-fill + order summary stacked (sidebars hidden) */}
+      <div className="mt-4 flex flex-col gap-4 lg:hidden">
         <AutoFillPanel api={api} />
+        <OrderSummary api={api} onCheckout={onCheckout} busy={busy} />
       </div>
-
-      <OrderSummary api={api} onCheckout={onCheckout} busy={busy} />
 
       <MobileCatalog catalog={catalog} onAdd={api.addBox} />
     </div>

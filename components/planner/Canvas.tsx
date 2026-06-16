@@ -307,29 +307,13 @@ export default function Canvas({ api }: { api: PlannerApi }) {
                     zIndex: isDragged ? 1000 : 100 - Math.floor(pos.z / 10),
                   }}
                 >
-                  {view === "top" ? (
-                    <img
-                      src={t.topImg}
-                      alt=""
-                      draggable={false}
-                      style={{
-                        width: boxH,
-                        height: boxW,
-                        transform: "rotate(90deg)",
-                        position: "absolute",
-                        top: (boxH - boxW) / 2,
-                        left: (boxW - boxH) / 2,
-                      }}
-                    />
-                  ) : (
-                    <img
-                      src={t.frontImg}
-                      alt=""
-                      draggable={false}
-                      className="block h-full w-full"
-                      style={{ objectFit: "fill" }}
-                    />
-                  )}
+                  <img
+                    src={view === "top" ? t.topImg : t.frontImg}
+                    alt=""
+                    draggable={false}
+                    className="block h-full w-full"
+                    style={{ objectFit: "fill" }}
+                  />
                   <span
                     dir="ltr"
                     className="pointer-events-none absolute bottom-[3px] left-1/2 -translate-x-1/2 text-[9px] font-bold text-black/45 [text-shadow:0_0_3px_rgba(255,255,255,0.85)]"
