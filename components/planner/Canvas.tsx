@@ -318,6 +318,7 @@ export default function Canvas({ api }: { api: PlannerApi }) {
                         position: "absolute",
                         width: boxH,
                         height: boxW,
+                        maxWidth: "none",
                         top: (boxH - boxW) / 2,
                         left: (boxW - boxH) / 2,
                         objectFit: "fill",
