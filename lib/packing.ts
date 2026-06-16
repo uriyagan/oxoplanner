@@ -58,7 +58,12 @@ export function inBounds(pos: Vec3, type: BoxType, space: Container): boolean {
   );
 }
 
-/** A box is supported if it sits on the floor or is fully held by boxes below. */
+/**
+ * A box is supported if it sits on the floor, or a box directly below it holds
+ * its centre of mass (or fully contains its footprint). Centre support keeps
+ * stacking forgiving when dragging — you don't have to align edges perfectly —
+ * while still preventing boxes from floating off the edge of a smaller one.
+ */
 export function hasSupport(
   pos: Vec3,
   type: BoxType,
@@ -67,6 +72,8 @@ export function hasSupport(
   excludeId: number | null,
 ): boolean {
   if (pos.y <= 0.01) return true;
+  const cx = pos.x + type.w / 2;
+  const cz = pos.z + type.d / 2;
   for (const o of placed) {
     if (excludeId !== null && o.id === excludeId) continue;
     const ot = getType(o.typeId);
@@ -74,9 +81,14 @@ export function hasSupport(
     if (Math.abs(pos.y - (o.y + ot.h)) > 0.01) continue;
     if (!rangesOverlap(pos.x, pos.x + type.w, o.x, o.x + ot.w)) continue;
     if (!rangesOverlap(pos.z, pos.z + type.d, o.z, o.z + ot.d)) continue;
+    const coversCentre =
+      cx >= o.x - 0.01 &&
+      cx <= o.x + ot.w + 0.01 &&
+      cz >= o.z - 0.01 &&
+      cz <= o.z + ot.d + 0.01;
     const fitsW = pos.x >= o.x - 0.01 && pos.x + type.w <= o.x + ot.w + 0.01;
     const fitsD = pos.z >= o.z - 0.01 && pos.z + type.d <= o.z + ot.d + 0.01;
-    if (fitsW && fitsD) return true;
+    if (coversCentre || (fitsW && fitsD)) return true;
   }
   return false;
 }

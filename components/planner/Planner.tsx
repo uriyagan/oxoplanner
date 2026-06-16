@@ -10,14 +10,8 @@ import Controls from "./Controls";
 import Canvas from "./Canvas";
 import OrderSummary from "./OrderSummary";
 import MobileCatalog from "./MobileCatalog";
+import HelpButton from "./HelpButton";
 import Toast from "./Toast";
-
-const STEPS = [
-  'בחרו מדף או מגירה והזינו את המידות בס"מ.',
-  "בחרו קופסאות מהקטלוג וסדרו אותן.",
-  "עברו בין תצוגות כדי לוודא שהכל יושב כמו שצריך.",
-  "הוסיפו לסל הקניות וסיימתם!",
-];
 
 export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
   const api = usePlanner(catalog);
@@ -78,15 +72,7 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
         </a>
       </header>
 
-      <ol className="my-5 flex flex-wrap justify-center gap-x-7 gap-y-1.5 rounded-xl border border-line bg-white px-5 py-3.5 text-[0.86rem] text-neutral-600">
-        {STEPS.map((s, i) => (
-          <li key={i} className="list-inside list-decimal">
-            {s}
-          </li>
-        ))}
-      </ol>
-
-      <div className="mb-4">
+      <div className="mb-4 mt-5">
         <Controls api={api} />
       </div>
 
@@ -115,6 +101,7 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
       </div>
 
       <MobileCatalog catalog={catalog} onAdd={api.addBox} />
+      <HelpButton />
     </div>
   );
 }
