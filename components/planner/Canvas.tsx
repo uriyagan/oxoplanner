@@ -244,7 +244,7 @@ export default function Canvas({ api }: { api: PlannerApi }) {
     <div className="relative h-full min-h-[460px] overflow-hidden rounded-xl bg-canvas">
       <div
         ref={viewportRef}
-        className="absolute inset-0 cursor-grab touch-none active:cursor-grabbing"
+        className="absolute inset-0 isolate cursor-grab touch-none active:cursor-grabbing"
           onPointerDown={onViewportPointerDown}
           onPointerMove={onViewportPointerMove}
           onPointerUp={endPan}
@@ -358,9 +358,9 @@ export default function Canvas({ api }: { api: PlannerApi }) {
         </div>
         <UtilRing pct={api.utilPct} />
 
-        {/* floating zoom / undo controls */}
-        <div className="pointer-events-none absolute left-3 top-3 z-20">
-          <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-1.5 rounded-full border border-line bg-white/95 px-2.5 py-1.5 shadow-sm backdrop-blur">
+        {/* floating zoom / undo controls — must stay above the boxes */}
+        <div className="pointer-events-none absolute left-3 top-3 z-30">
+          <div className="pointer-events-auto flex flex-wrap items-center justify-center gap-1.5 rounded-xl border border-line bg-white/95 px-2.5 py-1.5 shadow-sm backdrop-blur">
             <CtrlBtn onClick={api.undo} disabled={!api.canUndo} title="Ctrl+Z">
               ↩ ביטול
             </CtrlBtn>
