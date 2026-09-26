@@ -11,3 +11,8 @@ export function effectivePrice(p: PriceInfo | null, fallback: number): number {
   if (!p) return fallback;
   return p.onSale && p.salePrice != null ? p.salePrice : p.price;
 }
+
+/** Unknown stock (no live data) is treated as available. */
+export function isInStock(p: PriceInfo | null): boolean {
+  return p ? p.inStock !== false : true;
+}

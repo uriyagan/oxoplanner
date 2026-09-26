@@ -1,5 +1,5 @@
 import { ADD_TO_CART_ENDPOINT, CART_PATH, STORE_BASE } from "./config";
-import { effectivePrice } from "./format";
+import { effectivePrice, isInStock } from "./format";
 import type { CatalogItem, PlacedBox } from "./types";
 
 export interface CartLine {
@@ -7,6 +7,8 @@ export interface CartLine {
   qty: number;
   name: string;
   price: number;
+  /** False when the store currently reports the product as out of stock. */
+  inStock: boolean;
 }
 
 declare global {
@@ -31,6 +33,7 @@ export function buildCartLines(
       qty,
       name: item.name,
       price: effectivePrice(item.price, 0),
+      inStock: isInStock(item.price),
     });
   }
   return lines;

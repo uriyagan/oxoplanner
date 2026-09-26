@@ -1,12 +1,21 @@
 /** Storefront + integration configuration (overridable via env). */
 
 export const STORE_BASE =
-  process.env.NEXT_PUBLIC_STORE_BASE?.replace(/\/$/, "") || "https://uniqook.co.il";
+  process.env.NEXT_PUBLIC_STORE_BASE?.replace(/\/$/, "") || "https://www.uniqook.co.il";
 
 export const CART_PATH = process.env.NEXT_PUBLIC_CART_PATH || "/cart/";
 
-/** Existing WooCommerce prices endpoint used as a live-price fallback. */
+/**
+ * Primary live source: the public WooCommerce Store API. One request returns
+ * price, sale, stock and product images for all planner products.
+ */
+export const STORE_PRODUCTS_ENDPOINT = `${STORE_BASE}/wp-json/wc/store/v1/products`;
+
+/** Secondary live source (companion snippet): prices for the whole catalog. */
 export const PRICES_ENDPOINT = `${STORE_BASE}/wp-json/oxo/v1/prices`;
+
+/** How long (seconds) live prices/stock may be served from cache. */
+export const LIVE_REVALIDATE_SECONDS = 300;
 
 /**
  * Optional companion endpoint that adds many items at once and 302s to the cart.

@@ -36,9 +36,12 @@ export default function Planner({ catalog }: { catalog: CatalogItem[] }) {
   }, [api]);
 
   const onCheckout = async () => {
-    const lines = buildCartLines(api.placed, catalog);
+    const all = buildCartLines(api.placed, catalog);
+    const lines = all.filter((l) => l.inStock);
     if (lines.length === 0) {
-      api.showToast("לא ניתן להוסיף לסל");
+      api.showToast(
+        all.length > 0 ? "הקופסאות שנבחרו אינן במלאי כרגע" : "לא ניתן להוסיף לסל",
+      );
       return;
     }
     setBusy(true);

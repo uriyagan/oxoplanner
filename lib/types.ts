@@ -39,6 +39,11 @@ export interface PriceInfo {
 /** A box type with its live price merged in (price may be null until loaded). */
 export interface CatalogItem extends BoxType {
   price: PriceInfo | null;
+  /**
+   * WooCommerce product thumbnail, used by catalog lists when the dedicated
+   * front image is missing or fails to load.
+   */
+  fallbackImg: string | null;
 }
 
 export interface PlacedBox {

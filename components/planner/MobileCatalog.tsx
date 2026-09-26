@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, isInStock } from "@/lib/format";
 import type { CatalogItem } from "@/lib/types";
+import BoxImage from "./BoxImage";
 
 export default function MobileCatalog({
   catalog,
@@ -44,22 +45,40 @@ export default function MobileCatalog({
             <div className="scroll-thin flex flex-col gap-1.5 overflow-y-auto">
               {catalog.map((item) => {
                 const onSale = !!item.price?.onSale && item.price?.salePrice != null;
+                const inStock = isInStock(item.price);
                 return (
                   <div
                     key={item.id}
-                    className="flex items-center gap-2.5 rounded-lg border border-line p-2"
+                    className={[
+                      "flex items-center gap-2.5 rounded-lg border border-line p-2",
+                      inStock ? "" : "opacity-55 grayscale",
+                    ].join(" ")}
                   >
-                    <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-md">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={item.frontImg} alt="" className="max-h-full max-w-full object-contain" />
+                    <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center overflow-hidden rounded-md">
+                      <BoxImage
+                        src={item.frontImg}
+                        fallbackSrc={item.fallbackImg}
+                        lazy
+                        className="max-h-full max-w-full object-contain"
+                        placeholderClassName="h-9 w-9"
+                      />
                     </span>
                     <div className="flex-1 text-right">
                       <div className="text-[0.8rem] font-semibold">{item.name}</div>
                       <div className="text-[0.85rem] font-bold">
-                        {onSale ? (
-                          <span className="text-brand">
-                            {formatPrice(item.price!.salePrice!, item.price!.currency)}
+                        {!inStock ? (
+                          <span className="text-[0.75rem] font-semibold text-muted">
+                            לא במלאי
                           </span>
+                        ) : onSale ? (
+                          <>
+                            <span className="text-brand">
+                              {formatPrice(item.price!.salePrice!, item.price!.currency)}
+                            </span>{" "}
+                            <span className="text-[0.72rem] font-normal text-neutral-400 line-through">
+                              {formatPrice(item.price!.regularPrice, item.price!.currency)}
+                            </span>
+                          </>
                         ) : (
                           formatPrice(item.price?.price ?? 0, item.price?.currency)
                         )}
@@ -68,9 +87,10 @@ export default function MobileCatalog({
                     <button
                       type="button"
                       onClick={() => onAdd(item.id)}
-                      className="rounded-md bg-brand px-3 py-1.5 text-[0.75rem] font-semibold text-white hover:bg-brand-dark"
+                      disabled={!inStock}
+                      className="rounded-md bg-brand px-3 py-1.5 text-[0.75rem] font-semibold text-white hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
                     >
-                      הוספה
+                      {inStock ? "הוספה" : "אזל"}
                     </button>
                   </div>
                 );

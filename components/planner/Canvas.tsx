@@ -10,6 +10,7 @@ import {
 } from "@/lib/packing";
 import type { BoxType, PlacedBox, Vec3 } from "@/lib/types";
 import type { PlannerApi } from "@/lib/usePlanner";
+import BoxImage from "./BoxImage";
 import {
   BinIcon,
   FitIcon,
@@ -313,10 +314,8 @@ export default function Canvas({ api }: { api: PlannerApi }) {
                     // Non-square footprint: the lid art is drawn long-side
                     // horizontal, so rotate it 90° to align with the box depth
                     // while still stretching to fill the whole footprint.
-                    <img
+                    <BoxImage
                       src={t.topImg}
-                      alt=""
-                      draggable={false}
                       style={{
                         position: "absolute",
                         width: boxH,
@@ -327,14 +326,15 @@ export default function Canvas({ api }: { api: PlannerApi }) {
                         objectFit: "fill",
                         transform: "rotate(90deg)",
                       }}
+                      placeholderClassName="absolute inset-0"
+                      placeholderStyle={{}}
                     />
                   ) : (
-                    <img
+                    <BoxImage
                       src={view === "top" ? t.topImg : t.frontImg}
-                      alt=""
-                      draggable={false}
                       className="block h-full w-full"
                       style={{ objectFit: "fill" }}
+                      placeholderClassName="block h-full w-full"
                     />
                   )}
                   <span

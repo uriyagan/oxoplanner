@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { effectivePrice, formatPrice } from "@/lib/format";
+import { effectivePrice, formatPrice, isInStock } from "@/lib/format";
 import type { CatalogItem } from "@/lib/types";
 import type { PlannerApi } from "@/lib/usePlanner";
 import { MinusIcon, PlusIcon } from "@/components/icons";
@@ -20,20 +20,29 @@ export default function OrderSummary({
   const lines = useMemo(() => {
     const byType = new Map<string, number>();
     for (const p of placed) byType.set(p.typeId, (byType.get(p.typeId) ?? 0) + 1);
-    const items: Array<{ item: CatalogItem; count: number; unit: number }> = [];
+    const items: Array<{
+      item: CatalogItem;
+      count: number;
+      unit: number;
+      inStock: boolean;
+    }> = [];
     let total = 0;
     for (const [id, count] of byType) {
       const item = catalog.find((c) => c.id === id);
       if (!item) continue;
       const unit = effectivePrice(item.price, 0);
-      total += unit * count;
-      items.push({ item, count, unit });
+      const inStock = isInStock(item.price);
+      // Out-of-stock lines stay visible so the customer can see and remove
+      // them, but they are not counted and are not sent to the cart.
+      if (inStock) total += unit * count;
+      items.push({ item, count, unit, inStock });
     }
     items.sort((a, b) => a.item.sortOrder - b.item.sortOrder);
     return { items, total };
   }, [placed, catalog]);
 
   const empty = lines.items.length === 0;
+  const nothingPurchasable = lines.items.every((l) => !l.inStock);
 
   return (
     <div className="rounded-xl border border-line bg-white p-6">
@@ -45,15 +54,22 @@ export default function OrderSummary({
             עדיין לא נבחרו קופסאות
           </div>
         ) : (
-          lines.items.map(({ item, count, unit }) => (
+          lines.items.map(({ item, count, unit, inStock }) => (
             <div
               key={item.id}
-              className="flex items-center justify-between border-b border-bg py-3 last:border-0"
+              className={[
+                "flex items-center justify-between border-b border-bg py-3 last:border-0",
+                inStock ? "" : "opacity-60",
+              ].join(" ")}
             >
               <div className="flex-1 text-right">
                 <div className="text-[0.9rem] font-medium">{item.name}</div>
                 <div className="text-[0.8rem] text-neutral-400">
-                  {formatPrice(unit, item.price?.currency)} ליחידה
+                  {inStock ? (
+                    <>{formatPrice(unit, item.price?.currency)} ליחידה</>
+                  ) : (
+                    <span className="font-semibold text-brand">לא במלאי, לא יתווסף לסל</span>
+                  )}
                 </div>
               </div>
               <div className="mx-3 flex items-center gap-1.5">
@@ -68,7 +84,7 @@ export default function OrderSummary({
                 </QtyBtn>
               </div>
               <div className="whitespace-nowrap text-[0.95rem] font-semibold">
-                {formatPrice(unit * count, item.price?.currency)}
+                {inStock ? formatPrice(unit * count, item.price?.currency) : "-"}
               </div>
             </div>
           ))
@@ -84,7 +100,7 @@ export default function OrderSummary({
         <button
           type="button"
           onClick={onCheckout}
-          disabled={empty || busy}
+          disabled={empty || nothingPurchasable || busy}
           className="flex-1 rounded-lg bg-brand py-3.5 text-lg font-semibold text-white transition hover:bg-brand-dark disabled:cursor-not-allowed disabled:bg-line disabled:text-muted"
         >
           {busy ? "מוסיף לסל..." : "הוספה לסל הקניות"}

@@ -3,8 +3,9 @@
 import { useMemo } from "react";
 import { CATEGORY_ORDER } from "@/lib/catalog-seed";
 import { volumeMm3 } from "@/lib/packing";
-import { formatPrice } from "@/lib/format";
+import { formatPrice, isInStock } from "@/lib/format";
 import type { CatalogItem } from "@/lib/types";
+import BoxImage from "./BoxImage";
 
 export default function CatalogSidebar({
   catalog,
@@ -71,26 +72,44 @@ function CatalogRow({
 }) {
   const p = item.price;
   const onSale = !!p?.onSale && p?.salePrice != null;
+  const inStock = isInStock(p);
   return (
     <button
       type="button"
       onClick={() => onAdd(item.id)}
-      className="flex w-full items-center gap-2 rounded-lg p-2 text-right transition hover:bg-bg active:scale-[0.99]"
+      disabled={!inStock}
+      aria-disabled={!inStock}
+      title={inStock ? undefined : "לא במלאי כרגע"}
+      className={[
+        "flex w-full items-center gap-2 rounded-lg p-2 text-right transition",
+        inStock
+          ? "hover:bg-bg active:scale-[0.99]"
+          : "cursor-not-allowed opacity-55 grayscale",
+      ].join(" ")}
     >
       <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-md">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={item.frontImg} alt="" loading="lazy" className="max-h-full max-w-full object-contain" />
+        <BoxImage
+          src={item.frontImg}
+          fallbackSrc={item.fallbackImg}
+          lazy
+          className="max-h-full max-w-full object-contain"
+          placeholderClassName="h-8 w-8"
+        />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-[0.78rem] font-semibold">
           {item.name}
         </span>
         <span className="block text-[0.7rem] text-neutral-400">
-          {item.w / 10}×{item.h / 10}×{item.d / 10} ס"מ
+          {item.w / 10}×{item.h / 10}×{item.d / 10} ס&quot;מ
         </span>
       </span>
       <span className="whitespace-nowrap text-[0.8rem] font-bold">
-        {onSale ? (
+        {!inStock ? (
+          <span className="rounded-full bg-bg px-2 py-0.5 text-[0.7rem] font-semibold text-muted">
+            לא במלאי
+          </span>
+        ) : onSale ? (
           <>
             <span className="text-brand">{formatPrice(p!.salePrice!, p!.currency)}</span>{" "}
             <span className="text-[0.72rem] font-normal text-neutral-400 line-through">

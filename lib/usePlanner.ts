@@ -8,6 +8,7 @@ import {
   utilization,
 } from "./packing";
 import { DEFAULT_DIMS, DIM_LIMITS } from "./config";
+import { isInStock } from "./format";
 import type {
   CatalogItem,
   Container,
@@ -167,6 +168,10 @@ export function usePlanner(catalog: CatalogItem[]) {
     (typeId: string) => {
       const type = getType(typeId);
       if (!type) return;
+      if (!isInStock(type.price)) {
+        showToast("הקופסה אינה במלאי כרגע");
+        return;
+      }
       const pos = findValidPosition(type, container, mode, placed, getType);
       if (!pos) {
         showToast("אין מקום פנוי לקופסה זו");
@@ -225,8 +230,9 @@ export function usePlanner(catalog: CatalogItem[]) {
   // ── auto-fill ────────────────────────────────────────────────────
   const runFill = useCallback(
     (seed: number) => {
-      const available = catalog.filter((c) =>
-        fillSize === "mix" ? true : classify(c) === fillSize,
+      const available = catalog.filter(
+        (c) =>
+          isInStock(c.price) && (fillSize === "mix" ? true : classify(c) === fillSize),
       );
       if (available.length === 0) {
         showToast("אין קופסאות בגודל שנבחר");
