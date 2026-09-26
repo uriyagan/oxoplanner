@@ -115,9 +115,13 @@ async function fetchJson<T>(url: string): Promise<T | null> {
       signal: ctrl.signal,
       next: { revalidate: LIVE_REVALIDATE_SECONDS },
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn(`[catalog] live fetch ${res.status} ${url}`);
+      return null;
+    }
     return (await res.json()) as T;
-  } catch {
+  } catch (err) {
+    console.warn(`[catalog] live fetch failed ${url}: ${(err as Error)?.message ?? err}`);
     return null;
   } finally {
     clearTimeout(timer);
